@@ -1,0 +1,33 @@
+services:
+  n8n:
+    image: n8nio/n8n:latest
+    container_name: n8n
+    restart: unless-stopped
+    ports:
+      - "5678:5678"
+    environment:
+      # Configuración general
+      N8N_HOST: localhost
+      N8N_PORT: 5678
+      N8N_PROTOCOL: http
+      WEBHOOK_URL: http://localhost:5678/
+
+      # Seguridad
+      N8N_ENCRYPTION_KEY: change_this_to_a_long_random_secret_key
+      N8N_ENFORCE_SETTINGS_FILE_PERMISSIONS: "true"
+
+      # Desarrollo local
+      N8N_SECURE_COOKIE: "false"
+
+      # Recomendado en versiones actuales
+      N8N_RUNNERS_ENABLED: "true"
+
+      # Zona horaria
+      GENERIC_TIMEZONE: America/La_Paz
+      TZ: America/La_Paz
+
+    volumes:
+      - n8n_data:/home/node/.n8n
+
+volumes:
+  n8n_data:
