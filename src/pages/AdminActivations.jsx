@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import toast from 'react-hot-toast';
-import { ShieldCheck, Clock, Flag } from 'lucide-react';
+import { ShieldCheck, Clock, Flag, AlertCircle, CheckCircle } from 'lucide-react';
 
 export default function AdminActivations() {
   const [requests, setRequests] = useState([]);
+  const [currentRole, setCurrentRole] = useState('COMPRAS'); // COMPRAS o SOPORTE
 
   useEffect(() => {
     fetchRequests();
@@ -61,9 +62,24 @@ export default function AdminActivations() {
 
   return (
     <div className="glass-card" style={{ maxWidth: '1000px', margin: '0 auto' }}>
-      <div className="header">
+      <div className="header" style={{ marginBottom: '1rem' }}>
         <h1>Back Office: Gestión de Activaciones</h1>
-        <p>Área de Compras y Soporte a Proveedores</p>
+        <p>Selecciona tu rol para ver las acciones permitidas (Simulador)</p>
+      </div>
+
+      <div style={{ display: 'flex', gap: '1rem', marginBottom: '2rem', background: '#f3f4f6', padding: '0.5rem', borderRadius: '8px', width: 'fit-content', margin: '0 auto' }}>
+        <button 
+          onClick={() => setCurrentRole('COMPRAS')}
+          style={{ padding: '0.5rem 1.5rem', border: 'none', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold', background: currentRole === 'COMPRAS' ? '#3b82f6' : 'transparent', color: currentRole === 'COMPRAS' ? 'white' : '#4b5563' }}
+        >
+          Área de Compras
+        </button>
+        <button 
+          onClick={() => setCurrentRole('SOPORTE')}
+          style={{ padding: '0.5rem 1.5rem', border: 'none', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold', background: currentRole === 'SOPORTE' ? '#db2777' : 'transparent', color: currentRole === 'SOPORTE' ? 'white' : '#4b5563' }}
+        >
+          Soporte Técnico
+        </button>
       </div>
 
       <div style={{ overflowX: 'auto', marginTop: '2rem' }}>
@@ -91,32 +107,56 @@ export default function AdminActivations() {
                 <td style={{ padding: '1rem' }}>{req.providerData.codigoProveedor}</td>
                 <td style={{ padding: '1rem' }}>{getStatusBadge(req.status)}</td>
                 <td style={{ padding: '1rem', display: 'flex', gap: '0.5rem' }}>
-                  {req.status === 'SUBMISSION' && (
-                    <button 
-                      onClick={() => updateStatus(req.id, 'APPROVAL')}
-                      style={{ background: '#3b82f6', color: 'white', padding: '0.5rem', borderRadius: '6px', border: 'none', cursor: 'pointer' }}
-                      title="Solicitar Revisión"
-                    >
-                      <ShieldCheck size={18} />
-                    </button>
+                  
+                  {/* ACCIONES DEL ÁREA DE COMPRAS */}
+                  {currentRole === 'COMPRAS' && req.status === 'SUBMISSION' && (
+                    <>
+                      <button 
+                        onClick={() => updateStatus(req.id, 'APPROVAL')}
+                        style={{ background: '#3b82f6', color: 'white', padding: '0.5rem', borderRadius: '6px', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.5rem' }}
+                        title="Validar y Aprobar"
+                      >
+                        <ShieldCheck size={16} /> Aprobar y Derivar
+                      </button>
+                      <button 
+                        onClick={() => toast('En un sistema real, esto pediría corrección al proveedor.', { icon: 'ℹ️' })}
+                        style={{ background: '#f59e0b', color: 'white', padding: '0.5rem', borderRadius: '6px', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.5rem' }}
+                        title="Solicitar Corrección"
+                      >
+                        <AlertCircle size={16} /> Rechazar
+                      </button>
+                    </>
                   )}
-                  {req.status === 'APPROVAL' && (
+
+                  {/* ACCIONES DE SOPORTE TÉCNICO */}
+                  {currentRole === 'SOPORTE' && req.status === 'APPROVAL' && (
                     <button 
                       onClick={() => updateStatus(req.id, 'FULFILLMENT')}
-                      style={{ background: '#db2777', color: 'white', padding: '0.5rem', borderRadius: '6px', border: 'none', cursor: 'pointer' }}
-                      title="Aprobar"
+                      style={{ background: '#db2777', color: 'white', padding: '0.5rem', borderRadius: '6px', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.5rem' }}
+                      title="Registrar en DB y Archivo Excel"
                     >
-                      <ShieldCheck size={18} />
+                      <Clock size={16} /> Ejecutar Activación Técnica
                     </button>
                   )}
-                  {req.status === 'FULFILLMENT' && (
+                  {currentRole === 'SOPORTE' && req.status === 'FULFILLMENT' && (
                     <button 
                       onClick={() => updateStatus(req.id, 'CLOSURE')}
-                      style={{ background: '#22c55e', color: 'white', padding: '0.5rem', borderRadius: '6px', border: 'none', cursor: 'pointer' }}
-                      title="Enviar Código Proveedor"
+                      style={{ background: '#22c55e', color: 'white', padding: '0.5rem', borderRadius: '6px', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.5rem' }}
+                      title="Proveedor confirma que funciona"
                     >
-                      <Flag size={18} />
+                      <CheckCircle size={16} /> Validar con Proveedor y Cerrar
                     </button>
+                  )}
+
+                  {/* Mensajes si no hay acciones para su rol en este estado */}
+                  {currentRole === 'COMPRAS' && req.status !== 'SUBMISSION' && (
+                    <span style={{ fontSize: '0.8rem', color: 'gray' }}>Derivado a Soporte</span>
+                  )}
+                  {currentRole === 'SOPORTE' && req.status === 'SUBMISSION' && (
+                    <span style={{ fontSize: '0.8rem', color: 'gray' }}>Esperando aprobación de Compras</span>
+                  )}
+                  {req.status === 'CLOSURE' && (
+                    <span style={{ fontSize: '0.8rem', color: 'gray' }}>Proceso Terminado</span>
                   )}
                 </td>
               </tr>
