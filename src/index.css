@@ -108,6 +108,26 @@ body {
   box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.2);
 }
 
+.form-input.error-highlight {
+  border-color: var(--danger);
+  background: rgba(239, 68, 68, 0.05);
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.2);
+  animation: shake 0.5s cubic-bezier(.36,.07,.19,.97) both;
+}
+
+.file-upload.error-highlight {
+  border-color: var(--danger);
+  background: rgba(239, 68, 68, 0.05);
+  animation: shake 0.5s cubic-bezier(.36,.07,.19,.97) both;
+}
+
+@keyframes shake {
+  10%, 90% { transform: translate3d(-1px, 0, 0); }
+  20%, 80% { transform: translate3d(2px, 0, 0); }
+  30%, 50%, 70% { transform: translate3d(-4px, 0, 0); }
+  40%, 60% { transform: translate3d(4px, 0, 0); }
+}
+
 .file-upload {
   border: 2px dashed rgba(79, 70, 229, 0.3);
   padding: 2rem;

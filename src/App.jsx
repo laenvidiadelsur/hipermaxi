@@ -11,6 +11,7 @@ function ProductForm() {
   });
 
   const [dragActive, setDragActive] = useState(false);
+  const [formErrors, setFormErrors] = useState([]);
   
   // Usamos una referencia para que la función de ElevenLabs siempre lea los datos más recientes
   const formDataRef = useRef(formData);
@@ -36,9 +37,14 @@ function ProductForm() {
           let errorImagen = null;
           if (currentData.imagen && currentData.imagen.type === "application/pdf") {
             errorImagen = "Formato inválido. Debe ser JPG o PNG.";
+            camposVacios.push("Imagen");
           } else if (!currentData.imagen) {
             errorImagen = "No se ha subido ninguna imagen.";
+            camposVacios.push("Imagen");
           }
+
+          // Activamos la animación de error visualmente en los campos
+          setFormErrors(camposVacios);
 
           return {
             campos_incompletos: camposVacios,
@@ -145,10 +151,13 @@ function ProductForm() {
             <label>Descripción del Producto *</label>
             <input 
               type="text" 
-              className="form-input" 
+              className={`form-input ${formErrors.includes("Descripción") ? "error-highlight" : ""}`}
               placeholder="Ej. Galletas de Chocolate 500g"
               value={formData.descripcion}
-              onChange={(e) => setFormData({...formData, descripcion: e.target.value})}
+              onChange={(e) => {
+                setFormData({...formData, descripcion: e.target.value});
+                setFormErrors(prev => prev.filter(err => err !== "Descripción"));
+              }}
             />
           </div>
 
@@ -156,10 +165,13 @@ function ProductForm() {
             <label>Código de Barra *</label>
             <input 
               type="text" 
-              className="form-input" 
+              className={`form-input ${formErrors.includes("Código de Barra") ? "error-highlight" : ""}`}
               placeholder="Ej. 7701234567890"
               value={formData.codigoBarra}
-              onChange={(e) => setFormData({...formData, codigoBarra: e.target.value})}
+              onChange={(e) => {
+                setFormData({...formData, codigoBarra: e.target.value});
+                setFormErrors(prev => prev.filter(err => err !== "Código de Barra"));
+              }}
             />
           </div>
 
@@ -168,17 +180,20 @@ function ProductForm() {
             <input 
               type="number" 
               step="0.01"
-              className="form-input" 
+              className={`form-input ${formErrors.includes("Precio") ? "error-highlight" : ""}`}
               placeholder="0.00"
               value={formData.precio}
-              onChange={(e) => setFormData({...formData, precio: e.target.value})}
+              onChange={(e) => {
+                setFormData({...formData, precio: e.target.value});
+                setFormErrors(prev => prev.filter(err => err !== "Precio"));
+              }}
             />
           </div>
 
           <div className="form-group">
             <label>Imagen del Producto (JPG/PNG) *</label>
             <div 
-              className="file-upload"
+              className={`file-upload ${formErrors.includes("Imagen") ? "error-highlight" : ""}`}
               onDragEnter={handleDrag}
               onDragLeave={handleDrag}
               onDragOver={handleDrag}
@@ -186,14 +201,17 @@ function ProductForm() {
               style={{ borderColor: dragActive ? 'var(--primary)' : '' }}
               onClick={() => document.getElementById('file-upload-input').click()}
             >
-              <UploadCloud size={48} color="var(--primary)" style={{ opacity: 0.7, marginBottom: '1rem' }} />
+              <UploadCloud size={48} color={formErrors.includes("Imagen") ? "var(--danger)" : "var(--primary)"} style={{ opacity: 0.7, marginBottom: '1rem' }} />
               <p>{formData.imagen ? formData.imagen.name : 'Arrastra tu archivo aquí o haz clic para subir'}</p>
               <input 
                 id="file-upload-input"
                 type="file" 
                 accept=".jpg,.jpeg,.png,.pdf" 
                 style={{ display: 'none' }} 
-                onChange={handleChange}
+                onChange={(e) => {
+                  handleChange(e);
+                  setFormErrors(prev => prev.filter(err => err !== "Imagen"));
+                }}
               />
             </div>
           </div>
