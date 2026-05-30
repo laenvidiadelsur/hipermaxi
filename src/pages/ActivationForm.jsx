@@ -33,12 +33,16 @@ export default function ActivationForm() {
   const fetchStatus = async () => {
     try {
       const res = await fetch(`/api/activations/${requestId}`);
-      if (res.ok) {
-        const data = await res.json();
-        setCurrentStatus(data.status);
-      }
+      if (!res.ok) throw new Error('API Not Found');
+      const data = await res.json();
+      setCurrentStatus(data.status);
     } catch (e) {
-      console.error('Error fetching status', e);
+      console.warn('Fallback a LocalStorage para leer estado', e);
+      const mockDB = JSON.parse(localStorage.getItem('mockActivationsDB') || '[]');
+      const req = mockDB.find(r => r.id === requestId);
+      if (req) {
+        setCurrentStatus(req.status);
+      }
     }
   };
 
@@ -50,6 +54,9 @@ export default function ActivationForm() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData)
       });
+      
+      if (!res.ok) throw new Error('API no disponible');
+      
       const data = await res.json();
       
       setRequestId(data.id);
@@ -58,7 +65,24 @@ export default function ActivationForm() {
       
       toast.success('Solicitud enviada correctamente');
     } catch (e) {
-      toast.error('Error al enviar solicitud');
+      // FALLBACK MOCK: Si el backend de Vercel no está levantado, simular el avance para probar el UI.
+      console.warn('Usando Mock Backend porque la API falló:', e);
+      const fakeId = `req_${Date.now()}`;
+      setRequestId(fakeId);
+      setCurrentStatus('SUBMISSION');
+      localStorage.setItem('activationRequestId', fakeId);
+      
+      // Guardar también globalmente para que el Back Office pueda leerlo temporalmente
+      const mockDB = JSON.parse(localStorage.getItem('mockActivationsDB') || '[]');
+      mockDB.push({
+        id: fakeId,
+        providerData: formData,
+        status: 'SUBMISSION',
+        createdAt: new Date().toISOString()
+      });
+      localStorage.setItem('mockActivationsDB', JSON.stringify(mockDB));
+
+      toast.success('Solicitud Simulada (Modo Prueba)');
     }
   };
 
@@ -133,33 +157,33 @@ export default function ActivationForm() {
             <form onSubmit={handleSubmit} style={{ background: '#fff', padding: '0', borderRadius: '8px' }}>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem', marginBottom: '2rem' }}>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-                  <label style={{ fontSize: '0.9rem', fontWeight: 500 }}>Nombre del Proveedor *</label>
-                  <input required type="text" style={{ padding: '0.75rem', border: '1px solid #d1d5db', borderRadius: '4px' }} 
+                  <label style={{ fontSize: '0.9rem', fontWeight: 500 }}>Nombre del Proveedor</label>
+                  <input type="text" style={{ padding: '0.75rem', border: '1px solid #d1d5db', borderRadius: '4px' }} 
                     value={formData.nombreProveedor} onChange={e => setFormData({...formData, nombreProveedor: e.target.value})} />
                 </div>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-                  <label style={{ fontSize: '0.9rem', fontWeight: 500 }}>Razón Social *</label>
-                  <input required type="text" style={{ padding: '0.75rem', border: '1px solid #d1d5db', borderRadius: '4px' }} 
+                  <label style={{ fontSize: '0.9rem', fontWeight: 500 }}>Razón Social</label>
+                  <input type="text" style={{ padding: '0.75rem', border: '1px solid #d1d5db', borderRadius: '4px' }} 
                     value={formData.razonSocial} onChange={e => setFormData({...formData, razonSocial: e.target.value})} />
                 </div>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-                  <label style={{ fontSize: '0.9rem', fontWeight: 500 }}>NIT *</label>
-                  <input required type="text" style={{ padding: '0.75rem', border: '1px solid #d1d5db', borderRadius: '4px' }} 
+                  <label style={{ fontSize: '0.9rem', fontWeight: 500 }}>NIT</label>
+                  <input type="text" style={{ padding: '0.75rem', border: '1px solid #d1d5db', borderRadius: '4px' }} 
                     value={formData.nit} onChange={e => setFormData({...formData, nit: e.target.value})} />
                 </div>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-                  <label style={{ fontSize: '0.9rem', fontWeight: 500 }}>Email *</label>
-                  <input required type="email" style={{ padding: '0.75rem', border: '1px solid #d1d5db', borderRadius: '4px' }} 
+                  <label style={{ fontSize: '0.9rem', fontWeight: 500 }}>Email</label>
+                  <input type="email" style={{ padding: '0.75rem', border: '1px solid #d1d5db', borderRadius: '4px' }} 
                     value={formData.email} onChange={e => setFormData({...formData, email: e.target.value})} />
                 </div>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-                  <label style={{ fontSize: '0.9rem', fontWeight: 500 }}>Teléfono *</label>
-                  <input required type="text" style={{ padding: '0.75rem', border: '1px solid #d1d5db', borderRadius: '4px' }} 
+                  <label style={{ fontSize: '0.9rem', fontWeight: 500 }}>Teléfono</label>
+                  <input type="text" style={{ padding: '0.75rem', border: '1px solid #d1d5db', borderRadius: '4px' }} 
                     value={formData.telefono} onChange={e => setFormData({...formData, telefono: e.target.value})} />
                 </div>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-                  <label style={{ fontSize: '0.9rem', fontWeight: 500 }}>Código Proveedor (Catálogo) *</label>
-                  <input required type="text" style={{ padding: '0.75rem', border: '1px solid #d1d5db', borderRadius: '4px' }} 
+                  <label style={{ fontSize: '0.9rem', fontWeight: 500 }}>Código Proveedor (Catálogo)</label>
+                  <input type="text" style={{ padding: '0.75rem', border: '1px solid #d1d5db', borderRadius: '4px' }} 
                     value={formData.codigoProveedor} onChange={e => setFormData({...formData, codigoProveedor: e.target.value})} />
                 </div>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>

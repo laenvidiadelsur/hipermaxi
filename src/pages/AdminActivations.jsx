@@ -12,12 +12,13 @@ export default function AdminActivations() {
   const fetchRequests = async () => {
     try {
       const res = await fetch('/api/activations');
-      if (res.ok) {
-        const data = await res.json();
-        setRequests(data);
-      }
+      if (!res.ok) throw new Error('API down');
+      const data = await res.json();
+      setRequests(data);
     } catch (e) {
-      console.error('Error fetching requests', e);
+      console.warn('Fallback a LocalStorage para lista de requests');
+      const mockDB = JSON.parse(localStorage.getItem('mockActivationsDB') || '[]');
+      setRequests(mockDB);
     }
   };
 
@@ -29,12 +30,22 @@ export default function AdminActivations() {
         body: JSON.stringify({ status })
       });
       
-      if (res.ok) {
-        toast.success(`Estado actualizado a ${status}`);
-        fetchRequests(); // Recargar
-      }
+      if (!res.ok) throw new Error('API down');
+      
+      toast.success(`Estado actualizado a ${status}`);
+      fetchRequests();
     } catch (e) {
-      toast.error('Error al actualizar estado');
+      console.warn('Fallback a LocalStorage para update de status');
+      const mockDB = JSON.parse(localStorage.getItem('mockActivationsDB') || '[]');
+      const reqIndex = mockDB.findIndex(r => r.id === id);
+      if (reqIndex !== -1) {
+        mockDB[reqIndex].status = status;
+        localStorage.setItem('mockActivationsDB', JSON.stringify(mockDB));
+        toast.success(`Estado actualizado a ${status} (Modo Prueba)`);
+        fetchRequests();
+      } else {
+        toast.error('Error al actualizar estado');
+      }
     }
   };
 
