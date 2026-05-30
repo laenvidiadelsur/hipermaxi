@@ -1,6 +1,5 @@
-import React, { useState, useCallback } from 'react';
-import { ConversationProvider, useConversation, useConversationClientTool } from '@elevenlabs/react';
-import { Mic, MicOff, UploadCloud, CheckCircle2, AlertCircle } from 'lucide-react';
+import React, { useState, useEffect, useRef } from 'react';
+import { UploadCloud, CheckCircle2, AlertCircle } from 'lucide-react';
 import toast, { Toaster } from 'react-hot-toast';
 
 function ProductForm() {
@@ -12,49 +11,51 @@ function ProductForm() {
   });
 
   const [dragActive, setDragActive] = useState(false);
-  const conversation = useConversation();
+  
+  // Usamos una referencia para que la función de ElevenLabs siempre lea los datos más recientes
+  const formDataRef = useRef(formData);
+  useEffect(() => {
+    formDataRef.current = formData;
+  }, [formData]);
 
-  // ----- ElevenLabs Client Tool Integration -----
-  // This tool is called by the AI agent when the user needs help.
-  useConversationClientTool("check_form_status", async () => {
-    console.log("ElevenLabs AI is analyzing the form...");
-    
-    let camposVacios = [];
-    if (!formData.descripcion) camposVacios.push("Descripción");
-    if (!formData.codigoBarra) camposVacios.push("Código de Barra");
-    if (!formData.precio) camposVacios.push("Precio");
+  // Registramos el Client Tool en el widget flotante (web component)
+  useEffect(() => {
+    // Es posible que el widget tarde un instante en cargar tras inyectar el script
+    const checkAndRegister = setInterval(() => {
+      const widget = document.querySelector('elevenlabs-convai');
+      if (widget && typeof widget.registerClientTool === 'function') {
+        console.log("Widget ElevenLabs encontrado. Registrando Client Tool...");
+        
+        widget.registerClientTool("check_form_status", async () => {
+          console.log("ElevenLabs AI está analizando el formulario...");
+          const currentData = formDataRef.current;
+          
+          let camposVacios = [];
+          if (!currentData.descripcion) camposVacios.push("Descripción");
+          if (!currentData.codigoBarra) camposVacios.push("Código de Barra");
+          if (!currentData.precio) camposVacios.push("Precio");
 
-    let errorImagen = null;
-    if (formData.imagen && formData.imagen.type === "application/pdf") {
-      errorImagen = "Formato inválido. Debe ser JPG o PNG.";
-    } else if (!formData.imagen) {
-      errorImagen = "No se ha subido ninguna imagen.";
-    }
+          let errorImagen = null;
+          if (currentData.imagen && currentData.imagen.type === "application/pdf") {
+            errorImagen = "Formato inválido. Debe ser JPG o PNG.";
+          } else if (!currentData.imagen) {
+            errorImagen = "No se ha subido ninguna imagen.";
+          }
 
-    // Return the exact state to the Agent
-    return {
-      campos_incompletos: camposVacios,
-      error_imagen: errorImagen,
-      puede_guardar: camposVacios.length === 0 && !errorImagen
-    };
-  });
-  // ----------------------------------------------
-
-  const handleCallSupport = useCallback(async () => {
-    try {
-      if (conversation.status === 'connected') {
-        await conversation.endSession();
-      } else {
-        await navigator.mediaDevices.getUserMedia({ audio: true });
-        await conversation.startSession({
-          agentId: 'agent_4801ksx0pvn6fz2sn7a7ejxp8dn3'
+          // Le devolvemos el estado exacto al Agente
+          return {
+            campos_incompletos: camposVacios,
+            error_imagen: errorImagen,
+            puede_guardar: camposVacios.length === 0 && !errorImagen
+          };
         });
+        
+        clearInterval(checkAndRegister);
       }
-    } catch (error) {
-      console.error('Failed to start session:', error);
-      toast.error('No se pudo acceder al micrófono o conectar con la IA.');
-    }
-  }, [conversation]);
+    }, 500);
+
+    return () => clearInterval(checkAndRegister);
+  }, []);
 
   const handleFile = (file) => {
     if (file) {
@@ -118,7 +119,10 @@ function ProductForm() {
   };
 
   return (
-    <div className="app-container">
+    <div className="app-container" style={{ gridTemplateColumns: '1fr', maxWidth: '700px' }}>
+      {/* Widget Flotante de ElevenLabs */}
+      <elevenlabs-convai agent-id="agent_4801ksx0pvn6fz2sn7a7ejxp8dn3"></elevenlabs-convai>
+
       {/* Formulario Principal */}
       <div className="glass-card">
         <div className="header">
@@ -189,53 +193,15 @@ function ProductForm() {
           </button>
         </form>
       </div>
-
-      {/* AI Assistant Panel */}
-      <div className="glass-card ai-panel">
-        <div className="ai-content">
-          <div className={`ai-avatar ${conversation.status === 'connected' ? 'active' : ''}`}>
-            <AlertCircle size={48} />
-          </div>
-          
-          <div className="ai-status">
-            {conversation.status === 'connected' ? 'Conectado a Soporte AI' : 'Soporte Nivel 0'}
-          </div>
-          
-          <h2 style={{ fontSize: '1.2rem', marginBottom: '0.5rem', color: 'var(--text-main)' }}>¿No puedes guardar?</h2>
-          <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', marginBottom: '2rem' }}>
-            Habla con nuestro asistente virtual. Él puede ver qué te falta llenar en el formulario al instante.
-          </p>
-
-          <button 
-            className={`btn-call ${conversation.status === 'connected' ? 'connected' : ''}`}
-            onClick={handleCallSupport}
-            disabled={conversation.status === 'connecting'}
-          >
-            {conversation.status === 'connected' ? (
-              <><MicOff size={20} /> Colgar Llamada</>
-            ) : (
-              <><Mic size={20} /> Llamar a Soporte (AI)</>
-            )}
-          </button>
-
-          {conversation.status === 'connected' && (
-            <div className="volume-indicator">
-              {[...Array(5)].map((_, i) => (
-                <div key={i} className="bar" style={{ animationDelay: `${Math.random() * 0.5}s` }}></div>
-              ))}
-            </div>
-          )}
-        </div>
-      </div>
     </div>
   );
 }
 
 export default function App() {
   return (
-    <ConversationProvider>
+    <>
       <Toaster position="top-right" />
       <ProductForm />
-    </ConversationProvider>
+    </>
   );
 }
