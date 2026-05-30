@@ -1,4 +1,5 @@
 import { db } from '../db/index.js';
+import { EmailService } from './emailService.js';
 
 export const ActivationService = {
   createRequest(providerData) {
@@ -10,6 +11,10 @@ export const ActivationService = {
       updatedAt: new Date().toISOString()
     };
     db.activationRequests.push(newRequest);
+    
+    // Disparar envío de correo a Soporte/Compras en segundo plano
+    EmailService.sendNewRequestNotification(newRequest).catch(console.error);
+
     return newRequest;
   },
 
@@ -27,6 +32,10 @@ export const ActivationService = {
     
     request.status = newStatus;
     request.updatedAt = new Date().toISOString();
+
+    // Disparar envío de notificación al proveedor
+    EmailService.sendStatusUpdateNotification(request, newStatus).catch(console.error);
+
     return request;
   }
 };

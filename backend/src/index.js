@@ -1,6 +1,7 @@
 import express from 'express';
 import cors from 'cors';
 import { apiRouter } from './api/routes.js';
+import { webhookRouter } from './api/webhooks.js';
 import { startMcpServer } from './mcp/server.js';
 
 const app = express();
@@ -9,6 +10,9 @@ app.use(express.json());
 
 // Montar la API REST de ElevenLabs en /api
 app.use('/api', apiRouter);
+
+// Montar Webhooks de GCP Pub/Sub
+app.use('/api/webhooks', webhookRouter);
 
 // Ruta de validación para Vercel
 app.get('/', (req, res) => {
