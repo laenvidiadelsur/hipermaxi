@@ -40,10 +40,10 @@ export default function AdminActivations() {
 
   const getStatusBadge = (status) => {
     switch(status) {
-      case 'SUBMISSION': return <span style={{ background: '#fef08a', color: '#854d0e', padding: '4px 8px', borderRadius: '4px', fontSize: '0.8rem', fontWeight: 600 }}>Enviado</span>;
-      case 'APPROVAL': return <span style={{ background: '#bfdbfe', color: '#1e40af', padding: '4px 8px', borderRadius: '4px', fontSize: '0.8rem', fontWeight: 600 }}>En Aprobación</span>;
-      case 'FULFILLMENT': return <span style={{ background: '#fbcfe8', color: '#9d174d', padding: '4px 8px', borderRadius: '4px', fontSize: '0.8rem', fontWeight: 600 }}>En Cumplimiento</span>;
-      case 'CLOSURE': return <span style={{ background: '#bbf7d0', color: '#166534', padding: '4px 8px', borderRadius: '4px', fontSize: '0.8rem', fontWeight: 600 }}>Cerrado</span>;
+      case 'SUBMISSION': return <span style={{ background: '#fef08a', color: '#854d0e', padding: '4px 8px', borderRadius: '4px', fontSize: '0.8rem', fontWeight: 600 }}>Petición Info</span>;
+      case 'APPROVAL': return <span style={{ background: '#bfdbfe', color: '#1e40af', padding: '4px 8px', borderRadius: '4px', fontSize: '0.8rem', fontWeight: 600 }}>En Revisión</span>;
+      case 'FULFILLMENT': return <span style={{ background: '#fbcfe8', color: '#9d174d', padding: '4px 8px', borderRadius: '4px', fontSize: '0.8rem', fontWeight: 600 }}>Aprobado</span>;
+      case 'CLOSURE': return <span style={{ background: '#bbf7d0', color: '#166534', padding: '4px 8px', borderRadius: '4px', fontSize: '0.8rem', fontWeight: 600 }}>Código Generado</span>;
       default: return status;
     }
   };
@@ -84,7 +84,7 @@ export default function AdminActivations() {
                     <button 
                       onClick={() => updateStatus(req.id, 'APPROVAL')}
                       style={{ background: '#3b82f6', color: 'white', padding: '0.5rem', borderRadius: '6px', border: 'none', cursor: 'pointer' }}
-                      title="Área de Compras: Aprobar"
+                      title="Solicitar Revisión"
                     >
                       <ShieldCheck size={18} />
                     </button>
@@ -93,16 +93,16 @@ export default function AdminActivations() {
                     <button 
                       onClick={() => updateStatus(req.id, 'FULFILLMENT')}
                       style={{ background: '#db2777', color: 'white', padding: '0.5rem', borderRadius: '6px', border: 'none', cursor: 'pointer' }}
-                      title="Soporte: Ejecutar Activación"
+                      title="Aprobar"
                     >
-                      <Clock size={18} />
+                      <ShieldCheck size={18} />
                     </button>
                   )}
                   {req.status === 'FULFILLMENT' && (
                     <button 
                       onClick={() => updateStatus(req.id, 'CLOSURE')}
                       style={{ background: '#22c55e', color: 'white', padding: '0.5rem', borderRadius: '6px', border: 'none', cursor: 'pointer' }}
-                      title="Soporte: Cerrar Ticket"
+                      title="Enviar Código Proveedor"
                     >
                       <Flag size={18} />
                     </button>

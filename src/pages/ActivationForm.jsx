@@ -3,10 +3,10 @@ import { Send, CheckCircle, Clock, CheckCircle2, ShieldCheck, Flag } from 'lucid
 import toast from 'react-hot-toast';
 
 const STEPS = [
-  { id: 'SUBMISSION', label: 'Enviado', icon: <Send size={20} /> },
-  { id: 'APPROVAL', label: 'Aprobación (Compras)', icon: <ShieldCheck size={20} /> },
-  { id: 'FULFILLMENT', label: 'Cumplimiento (Soporte)', icon: <Clock size={20} /> },
-  { id: 'CLOSURE', label: 'Cierre', icon: <Flag size={20} /> }
+  { id: 'SUBMISSION', label: 'Petición de Información', icon: <Send size={20} /> },
+  { id: 'APPROVAL', label: 'Revisión (Aprobación)', icon: <ShieldCheck size={20} /> },
+  { id: 'FULFILLMENT', label: 'Aprobado', icon: <CheckCircle size={20} /> },
+  { id: 'CLOSURE', label: 'Código Asignado', icon: <Flag size={20} /> }
 ];
 
 export default function ActivationForm() {
