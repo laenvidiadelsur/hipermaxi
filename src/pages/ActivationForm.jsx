@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { Send, CheckCircle, Clock, CheckCircle2, ShieldCheck, Flag } from 'lucide-react';
+import { FileText } from 'lucide-react';
 import toast from 'react-hot-toast';
 
 const STEPS = [
-  { id: 'SUBMISSION', label: 'Petición de Información', icon: <Send size={20} /> },
-  { id: 'APPROVAL', label: 'Revisión (Aprobación)', icon: <ShieldCheck size={20} /> },
-  { id: 'FULFILLMENT', label: 'Aprobado', icon: <CheckCircle size={20} /> },
-  { id: 'CLOSURE', label: 'Código Asignado', icon: <Flag size={20} /> }
+  { id: 'SUBMISSION', label: 'Petición de Información', number: '1' },
+  { id: 'APPROVAL', label: 'Revisión (Aprobación)', number: '2' },
+  { id: 'FULFILLMENT', label: 'Aprobado', number: '3' },
+  { id: 'CLOSURE', label: 'Código Asignado', icon: <FileText size={14} /> }
 ];
 
 export default function ActivationForm() {
@@ -21,11 +21,10 @@ export default function ActivationForm() {
     region: 'Santa Cruz'
   });
 
-  const [currentStatus, setCurrentStatus] = useState(null); // null significa que aún no ha enviado
+  const [currentStatus, setCurrentStatus] = useState(null);
   const [requestId, setRequestId] = useState(localStorage.getItem('activationRequestId') || null);
 
   useEffect(() => {
-    // Si ya existe un request, consultar el estado al backend
     if (requestId) {
       fetchStatus();
     }
@@ -33,7 +32,6 @@ export default function ActivationForm() {
 
   const fetchStatus = async () => {
     try {
-      // En desarrollo usamos el proxy o ruta directa. Para Vercel será /api/...
       const res = await fetch(`/api/activations/${requestId}`);
       if (res.ok) {
         const data = await res.json();
@@ -65,132 +63,171 @@ export default function ActivationForm() {
   };
 
   const getStepIndex = (status) => {
+    if (!status) return 0; // Si no hay estado, estamos en el paso 1 llenando el form
     return STEPS.findIndex(s => s.id === status);
   };
 
   const activeIndex = getStepIndex(currentStatus);
 
   return (
-    <div className="app-container" style={{ gridTemplateColumns: '1fr', maxWidth: '800px', margin: '0 auto' }}>
+    <div style={{ maxWidth: '1000px', margin: '0 auto', padding: '2rem 1rem', fontFamily: 'sans-serif' }}>
       
-      {/* Progress Stepper Visual */}
-      {currentStatus && (
-        <div className="glass-card" style={{ marginBottom: '2rem' }}>
-          <h2 style={{ marginBottom: '1.5rem', textAlign: 'center' }}>Estado de tu Solicitud</h2>
-          <div style={{ display: 'flex', justifyContent: 'space-between', position: 'relative' }}>
-            
-            {/* Línea de conexión de fondo */}
-            <div style={{
-              position: 'absolute', top: '24px', left: '10%', right: '10%',
-              height: '4px', background: 'rgba(0,0,0,0.1)', zIndex: 0
-            }}></div>
-
-            {/* Línea de progreso */}
-            <div style={{
-              position: 'absolute', top: '24px', left: '10%', 
-              width: `${(Math.max(activeIndex, 0) / (STEPS.length - 1)) * 80}%`,
-              height: '4px', background: 'var(--primary)', zIndex: 0, transition: 'width 0.5s ease'
-            }}></div>
-
-            {STEPS.map((step, index) => {
-              const isActive = index <= activeIndex;
-              return (
-                <div key={step.id} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', zIndex: 1, width: '25%' }}>
-                  <div style={{
-                    width: '48px', height: '48px', borderRadius: '50%',
-                    background: isActive ? 'var(--primary)' : 'white',
-                    border: `4px solid ${isActive ? 'var(--primary)' : 'rgba(0,0,0,0.1)'}`,
-                    display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    color: isActive ? 'white' : 'gray',
-                    transition: 'all 0.3s ease',
-                    boxShadow: isActive ? '0 0 15px rgba(79, 70, 229, 0.4)' : 'none'
-                  }}>
-                    {isActive && index < activeIndex ? <CheckCircle2 size={24} /> : step.icon}
-                  </div>
-                  <span style={{ 
-                    marginTop: '0.8rem', fontSize: '0.9rem', textAlign: 'center',
-                    fontWeight: isActive ? '600' : '400',
-                    color: isActive ? 'var(--text)' : 'var(--text-muted)'
-                  }}>
-                    {step.label}
-                  </span>
-                </div>
-              );
-            })}
-          </div>
+      {/* UNITY STYLE STEPPER */}
+      <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '3rem', position: 'relative' }}>
+        <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', width: '600px', position: 'relative' }}>
           
-          <div style={{ marginTop: '2rem', textAlign: 'center' }}>
-            <button onClick={fetchStatus} className="btn-submit" style={{ padding: '0.5rem 1rem', width: 'auto' }}>
-              Actualizar Estado
-            </button>
-          </div>
+          {/* Línea de conexión */}
+          <div style={{
+            position: 'absolute',
+            top: '12px',
+            left: '40px',
+            right: '40px',
+            height: '1px',
+            background: '#d1d5db', // gray-300
+            zIndex: 0
+          }}></div>
+
+          {STEPS.map((step, index) => {
+            const isActive = index <= activeIndex;
+            return (
+              <div key={step.id} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', zIndex: 1, width: '120px' }}>
+                <div style={{
+                  width: '24px', 
+                  height: '24px', 
+                  borderRadius: '50%',
+                  background: isActive ? '#000' : '#fff',
+                  border: `1px solid ${isActive ? '#000' : '#d1d5db'}`,
+                  display: 'flex', 
+                  alignItems: 'center', 
+                  justifyContent: 'center',
+                  color: isActive ? '#fff' : '#6b7280',
+                  fontSize: '12px',
+                  fontWeight: '600',
+                  marginBottom: '8px'
+                }}>
+                  {step.icon ? step.icon : step.number}
+                </div>
+                <span style={{ 
+                  fontSize: '11px', 
+                  textAlign: 'center',
+                  fontWeight: isActive ? '600' : '400',
+                  color: '#000'
+                }}>
+                  {step.label}
+                </span>
+              </div>
+            );
+          })}
         </div>
-      )}
+      </div>
 
-      {/* Formulario */}
-      {!currentStatus && (
-        <div className="glass-card">
-          <div className="header">
-            <h1>Solicitud de Activación de Código (Catálogo)</h1>
-            <p>Procedimiento SOP-SR-02</p>
-          </div>
+      <div style={{ display: 'flex', gap: '2rem' }}>
+        
+        {/* MAIN CONTENT AREA */}
+        <div style={{ flex: 1 }}>
+          <h2 style={{ fontSize: '1.5rem', fontWeight: 'bold', marginBottom: '1.5rem' }}>
+            {currentStatus ? 'Estado de tu Solicitud' : 'Petición de Información'}
+          </h2>
 
-          <form onSubmit={handleSubmit}>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
-              <div className="form-group">
-                <label>Nombre del Proveedor *</label>
-                <input required type="text" className="form-input" 
-                  value={formData.nombreProveedor} onChange={e => setFormData({...formData, nombreProveedor: e.target.value})} />
+          {!currentStatus ? (
+            <form onSubmit={handleSubmit} style={{ background: '#fff', padding: '0', borderRadius: '8px' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem', marginBottom: '2rem' }}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                  <label style={{ fontSize: '0.9rem', fontWeight: 500 }}>Nombre del Proveedor *</label>
+                  <input required type="text" style={{ padding: '0.75rem', border: '1px solid #d1d5db', borderRadius: '4px' }} 
+                    value={formData.nombreProveedor} onChange={e => setFormData({...formData, nombreProveedor: e.target.value})} />
+                </div>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                  <label style={{ fontSize: '0.9rem', fontWeight: 500 }}>Razón Social *</label>
+                  <input required type="text" style={{ padding: '0.75rem', border: '1px solid #d1d5db', borderRadius: '4px' }} 
+                    value={formData.razonSocial} onChange={e => setFormData({...formData, razonSocial: e.target.value})} />
+                </div>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                  <label style={{ fontSize: '0.9rem', fontWeight: 500 }}>NIT *</label>
+                  <input required type="text" style={{ padding: '0.75rem', border: '1px solid #d1d5db', borderRadius: '4px' }} 
+                    value={formData.nit} onChange={e => setFormData({...formData, nit: e.target.value})} />
+                </div>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                  <label style={{ fontSize: '0.9rem', fontWeight: 500 }}>Email *</label>
+                  <input required type="email" style={{ padding: '0.75rem', border: '1px solid #d1d5db', borderRadius: '4px' }} 
+                    value={formData.email} onChange={e => setFormData({...formData, email: e.target.value})} />
+                </div>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                  <label style={{ fontSize: '0.9rem', fontWeight: 500 }}>Teléfono *</label>
+                  <input required type="text" style={{ padding: '0.75rem', border: '1px solid #d1d5db', borderRadius: '4px' }} 
+                    value={formData.telefono} onChange={e => setFormData({...formData, telefono: e.target.value})} />
+                </div>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                  <label style={{ fontSize: '0.9rem', fontWeight: 500 }}>Código Proveedor (Catálogo) *</label>
+                  <input required type="text" style={{ padding: '0.75rem', border: '1px solid #d1d5db', borderRadius: '4px' }} 
+                    value={formData.codigoProveedor} onChange={e => setFormData({...formData, codigoProveedor: e.target.value})} />
+                </div>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                  <label style={{ fontSize: '0.9rem', fontWeight: 500 }}>Rol *</label>
+                  <select style={{ padding: '0.75rem', border: '1px solid #d1d5db', borderRadius: '4px' }} value={formData.rol} onChange={e => setFormData({...formData, rol: e.target.value})}>
+                    <option>Encargado de Sistemas</option>
+                    <option>Encargado HUB</option>
+                    <option>Encargado de Área Comercial/Ventas</option>
+                  </select>
+                </div>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                  <label style={{ fontSize: '0.9rem', fontWeight: 500 }}>Región *</label>
+                  <select style={{ padding: '0.75rem', border: '1px solid #d1d5db', borderRadius: '4px' }} value={formData.region} onChange={e => setFormData({...formData, region: e.target.value})}>
+                    <option>Santa Cruz</option>
+                    <option>La Paz</option>
+                    <option>Cochabamba</option>
+                  </select>
+                </div>
               </div>
-              <div className="form-group">
-                <label>Razón Social *</label>
-                <input required type="text" className="form-input" 
-                  value={formData.razonSocial} onChange={e => setFormData({...formData, razonSocial: e.target.value})} />
+              <button type="submit" style={{ background: '#3b82f6', color: 'white', padding: '0.75rem 2rem', borderRadius: '4px', border: 'none', fontWeight: 'bold', cursor: 'pointer' }}>
+                Next step
+              </button>
+            </form>
+          ) : (
+            <div style={{ padding: '2rem', border: '1px solid #e5e7eb', borderRadius: '8px', background: '#f9fafb' }}>
+              <h3 style={{ marginBottom: '1rem' }}>Tu solicitud está en proceso</h3>
+              <p style={{ color: '#4b5563', marginBottom: '2rem' }}>
+                El ID de tu solicitud es: <strong>{requestId}</strong>. <br/>
+                Actualmente se encuentra en la etapa: <strong>{STEPS[activeIndex].label}</strong>.
+              </p>
+              <button onClick={fetchStatus} style={{ background: '#000', color: 'white', padding: '0.75rem 1.5rem', borderRadius: '4px', border: 'none', fontWeight: 'bold', cursor: 'pointer' }}>
+                Actualizar Estado
+              </button>
+            </div>
+          )}
+        </div>
+        
+        {/* RIGHT SIDEBAR SIMULATION (Like Unity summary) */}
+        {!currentStatus && (
+          <div style={{ width: '300px' }}>
+            <div style={{ border: '1px solid #e5e7eb', borderRadius: '4px', background: '#fff' }}>
+              <div style={{ padding: '1rem', borderBottom: '1px solid #e5e7eb', fontWeight: 'bold' }}>
+                Resumen de Solicitud
               </div>
-              <div className="form-group">
-                <label>NIT *</label>
-                <input required type="text" className="form-input" 
-                  value={formData.nit} onChange={e => setFormData({...formData, nit: e.target.value})} />
-              </div>
-              <div className="form-group">
-                <label>Email *</label>
-                <input required type="email" className="form-input" 
-                  value={formData.email} onChange={e => setFormData({...formData, email: e.target.value})} />
-              </div>
-              <div className="form-group">
-                <label>Teléfono *</label>
-                <input required type="text" className="form-input" 
-                  value={formData.telefono} onChange={e => setFormData({...formData, telefono: e.target.value})} />
-              </div>
-              <div className="form-group">
-                <label>Código Proveedor (Catálogo) *</label>
-                <input required type="text" className="form-input" 
-                  value={formData.codigoProveedor} onChange={e => setFormData({...formData, codigoProveedor: e.target.value})} />
-              </div>
-              <div className="form-group">
-                <label>Rol *</label>
-                <select className="form-input" value={formData.rol} onChange={e => setFormData({...formData, rol: e.target.value})}>
-                  <option>Encargado de Sistemas</option>
-                  <option>Encargado HUB</option>
-                  <option>Encargado de Área Comercial/Ventas</option>
-                </select>
-              </div>
-              <div className="form-group">
-                <label>Región *</label>
-                <select className="form-input" value={formData.region} onChange={e => setFormData({...formData, region: e.target.value})}>
-                  <option>Santa Cruz</option>
-                  <option>La Paz</option>
-                  <option>Cochabamba</option>
-                </select>
+              <div style={{ padding: '1rem' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem', fontSize: '0.9rem' }}>
+                  <span>Soporte a Proveedores</span>
+                  <span style={{ color: '#16a34a', fontWeight: 'bold' }}>Gratis</span>
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.9rem', color: '#6b7280', borderBottom: '1px solid #e5e7eb', paddingBottom: '1rem', marginBottom: '1rem' }}>
+                  <span>Activación de Catálogo</span>
+                </div>
+                
+                <div style={{ display: 'flex', justifyContent: 'space-between', fontWeight: 'bold', fontSize: '1rem', marginBottom: '1rem' }}>
+                  <span>Costo total:</span>
+                  <span style={{ color: '#16a34a' }}>$0.00</span>
+                </div>
+
+                <div style={{ background: '#f3f4f6', padding: '1rem', borderRadius: '4px', fontSize: '0.8rem', color: '#4b5563', marginBottom: '1rem' }}>
+                  <strong>Compromiso</strong><br/>
+                  Al enviar esta solicitud aceptas el acuerdo comercial de Hipermaxi S.A.
+                </div>
               </div>
             </div>
+          </div>
+        )}
 
-            <button type="submit" className="btn-submit" style={{ marginTop: '1.5rem' }}>
-              Enviar Solicitud
-            </button>
-          </form>
-        </div>
-      )}
+      </div>
     </div>
   );
 }
