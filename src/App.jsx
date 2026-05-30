@@ -20,13 +20,11 @@ function ProductForm() {
 
   // Registramos el Client Tool en el widget flotante (web component)
   useEffect(() => {
-    // Es posible que el widget tarde un instante en cargar tras inyectar el script
-    const checkAndRegister = setInterval(() => {
-      const widget = document.querySelector('elevenlabs-convai');
-      if (widget && typeof widget.registerClientTool === 'function') {
-        console.log("Widget ElevenLabs encontrado. Registrando Client Tool...");
-        
-        widget.registerClientTool("check_form_status", async () => {
+    const handleCall = (event) => {
+      console.log("ElevenLabs AI inició llamada. Registrando Client Tool...");
+      
+      event.detail.config.clientTools = {
+        check_form_status: async () => {
           console.log("ElevenLabs AI está analizando el formulario...");
           const currentData = formDataRef.current;
           
@@ -42,19 +40,31 @@ function ProductForm() {
             errorImagen = "No se ha subido ninguna imagen.";
           }
 
-          // Le devolvemos el estado exacto al Agente
           return {
             campos_incompletos: camposVacios,
             error_imagen: errorImagen,
             puede_guardar: camposVacios.length === 0 && !errorImagen
           };
-        });
-        
-        clearInterval(checkAndRegister);
+        }
+      };
+    };
+
+    // Intentar buscar el widget y agregar el listener
+    const attachListener = setInterval(() => {
+      const widget = document.querySelector('elevenlabs-convai');
+      if (widget) {
+        widget.addEventListener('elevenlabs-convai:call', handleCall);
+        clearInterval(attachListener);
       }
     }, 500);
 
-    return () => clearInterval(checkAndRegister);
+    return () => {
+      clearInterval(attachListener);
+      const widget = document.querySelector('elevenlabs-convai');
+      if (widget) {
+        widget.removeEventListener('elevenlabs-convai:call', handleCall);
+      }
+    };
   }, []);
 
   const handleFile = (file) => {
