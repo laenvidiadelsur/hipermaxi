@@ -3,6 +3,8 @@ import { Routes, Route, useNavigate } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
 import Home from './pages/Home';
 import ProductForm from './pages/ProductForm';
+import ActivationForm from './pages/ActivationForm';
+import AdminActivations from './pages/AdminActivations';
 
 export default function App() {
   const navigate = useNavigate();
@@ -59,6 +61,8 @@ export default function App() {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/crear-producto" element={<ProductForm />} />
+          <Route path="/activacion-codigo" element={<ActivationForm />} />
+          <Route path="/admin/activaciones" element={<AdminActivations />} />
         </Routes>
       </div>
     </>

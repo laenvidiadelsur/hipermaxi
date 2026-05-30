@@ -6,8 +6,10 @@ const products = [
 ];
 
 const orders = [];
+const activationRequests = [];
 
 export const db = {
   products,
   orders,
+  activationRequests,
 };

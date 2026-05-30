@@ -19,12 +19,9 @@ export default function Home() {
         <div 
           onClick={() => navigate('/crear-producto')}
           style={{ 
-            padding: '2rem', 
-            background: 'rgba(255,255,255,0.6)', 
-            borderRadius: '16px', 
-            cursor: 'pointer',
-            transition: 'transform 0.2s',
-            border: '1px solid rgba(0,0,0,0.1)'
+            padding: '2rem', background: 'rgba(255,255,255,0.6)', 
+            borderRadius: '16px', cursor: 'pointer',
+            transition: 'transform 0.2s', border: '1px solid rgba(0,0,0,0.1)'
           }}
           onMouseOver={(e) => e.currentTarget.style.transform = 'scale(1.05)'}
           onMouseOut={(e) => e.currentTarget.style.transform = 'scale(1)'}
@@ -35,18 +32,33 @@ export default function Home() {
         </div>
 
         <div 
+          onClick={() => navigate('/activacion-codigo')}
           style={{ 
-            padding: '2rem', 
-            background: 'rgba(255,255,255,0.6)', 
-            borderRadius: '16px', 
-            cursor: 'not-allowed',
-            border: '1px solid rgba(0,0,0,0.1)',
-            opacity: 0.7
+            padding: '2rem', background: 'rgba(255,255,255,0.6)', 
+            borderRadius: '16px', cursor: 'pointer',
+            transition: 'transform 0.2s', border: '1px solid rgba(0,0,0,0.1)'
           }}
+          onMouseOver={(e) => e.currentTarget.style.transform = 'scale(1.05)'}
+          onMouseOut={(e) => e.currentTarget.style.transform = 'scale(1)'}
         >
-          <LayoutDashboard size={48} color="var(--secondary)" style={{ margin: '0 auto 1rem' }} />
-          <h3 style={{ fontSize: '1.2rem', marginBottom: '0.5rem' }}>Ver Inventario</h3>
-          <p style={{ color: 'var(--text-muted)' }}>Próximamente: Administra tu stock y precios.</p>
+          <LayoutDashboard size={48} color="#2563eb" style={{ margin: '0 auto 1rem' }} />
+          <h3 style={{ fontSize: '1.2rem', marginBottom: '0.5rem' }}>Activar Código Proveedor</h3>
+          <p style={{ color: 'var(--text-muted)' }}>Solicita y haz seguimiento a la activación de tu catálogo.</p>
+        </div>
+
+        <div 
+          onClick={() => navigate('/admin/activaciones')}
+          style={{ 
+            padding: '2rem', background: 'rgba(255,255,255,0.6)', 
+            borderRadius: '16px', cursor: 'pointer',
+            transition: 'transform 0.2s', border: '1px solid rgba(0,0,0,0.1)'
+          }}
+          onMouseOver={(e) => e.currentTarget.style.transform = 'scale(1.05)'}
+          onMouseOut={(e) => e.currentTarget.style.transform = 'scale(1)'}
+        >
+          <LayoutDashboard size={48} color="#db2777" style={{ margin: '0 auto 1rem' }} />
+          <h3 style={{ fontSize: '1.2rem', marginBottom: '0.5rem' }}>Back Office (Admin)</h3>
+          <p style={{ color: 'var(--text-muted)' }}>Solo Compras y Soporte: Gestiona las solicitudes ITIL.</p>
         </div>
 
       </div>
