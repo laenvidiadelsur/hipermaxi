@@ -1,0 +1,44 @@
+-- Extend whatsapp_templates to support Meta-like wizard types
+-- (STANDARD / CAROUSEL / FLOW), header format, and richer rejection/quality fields.
+
+DO $$
+BEGIN
+  -- enums (idempotent)
+  IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'whatsapp_template_type') THEN
+    CREATE TYPE public.whatsapp_template_type AS ENUM ('STANDARD', 'CAROUSEL', 'FLOW');
+  END IF;
+
+  IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'whatsapp_template_header_format') THEN
+    CREATE TYPE public.whatsapp_template_header_format AS ENUM ('NONE', 'TEXT', 'IMAGE', 'VIDEO', 'DOCUMENT');
+  END IF;
+END $$;
+
+ALTER TABLE public.whatsapp_templates
+  ADD COLUMN IF NOT EXISTS template_type public.whatsapp_template_type NOT NULL DEFAULT 'STANDARD',
+  ADD COLUMN IF NOT EXISTS header_format public.whatsapp_template_header_format NOT NULL DEFAULT 'NONE',
+  ADD COLUMN IF NOT EXISTS quality_score text,
+  ADD COLUMN IF NOT EXISTS rejection_reason text;
+
+-- Enforce unique template_name per configuration (ignoring soft-deletes)
+DO $$
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1
+    FROM pg_indexes
+    WHERE schemaname = 'public'
+      AND indexname = 'ux_whatsapp_templates_config_name_active'
+  ) THEN
+    CREATE UNIQUE INDEX ux_whatsapp_templates_config_name_active
+      ON public.whatsapp_templates (whatsapp_configuration_id, template_name)
+      WHERE deleted_at IS NULL;
+  END IF;
+END $$;
+
+CREATE INDEX IF NOT EXISTS idx_whatsapp_templates_meta_status
+  ON public.whatsapp_templates (meta_status)
+  WHERE deleted_at IS NULL;
+
+CREATE INDEX IF NOT EXISTS idx_whatsapp_templates_template_type
+  ON public.whatsapp_templates (template_type)
+  WHERE deleted_at IS NULL;
+

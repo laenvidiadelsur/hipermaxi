@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tu enlace de acceso — AiCobranzas</title>
+</head>
+<body style="margin:0;padding:0;background-color:#f0f4ff;font-family:'Segoe UI',Arial,sans-serif;">
+
+  <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#f0f4ff;padding:40px 0;">
+    <tr>
+      <td align="center">
+
+        <!-- Card -->
+        <table width="560" cellpadding="0" cellspacing="0" border="0"
+          style="background:#ffffff;border-radius:16px;overflow:hidden;
+                 box-shadow:0 4px 24px rgba(79,70,229,0.10);max-width:560px;width:100%;">
+
+          <!-- Header con gradiente -->
+          <tr>
+            <td align="center"
+              style="background:linear-gradient(135deg,#4f46e5 0%,#7c3aed 100%);
+                     padding:40px 40px 32px 40px;">
+
+              <!-- Logo / Ícono -->
+              <table cellpadding="0" cellspacing="0" border="0">
+                <tr>
+                  <td align="center"
+                    style="background:rgba(255,255,255,0.15);border-radius:16px;
+                           width:64px;height:64px;text-align:center;vertical-align:middle;">
+                    <span style="font-size:32px;line-height:64px;">⚡</span>
+                  </td>
+                </tr>
+              </table>
+
+              <p style="margin:20px 0 0 0;font-size:22px;font-weight:700;
+                         color:#ffffff;letter-spacing:-0.3px;">
+                AiCobranzas
+              </p>
+              <p style="margin:6px 0 0 0;font-size:13px;color:rgba(255,255,255,0.75);
+                         letter-spacing:0.5px;text-transform:uppercase;">
+                Plataforma de Cobranza Inteligente
+              </p>
+            </td>
+          </tr>
+
+          <!-- Cuerpo -->
+          <tr>
+            <td style="padding:40px 48px 32px 48px;">
+
+              <p style="margin:0 0 8px 0;font-size:24px;font-weight:700;
+                         color:#1e1b4b;letter-spacing:-0.5px;">
+                Tu enlace de acceso
+              </p>
+              <p style="margin:0 0 28px 0;font-size:15px;color:#6b7280;line-height:1.6;">
+                Haz clic en el botón para acceder a tu cuenta de forma segura.
+                Este enlace es válido por <strong style="color:#4f46e5;">60 minutos</strong>
+                y solo puede usarse una vez.
+              </p>
+
+              <!-- Botón CTA -->
+              <table width="100%" cellpadding="0" cellspacing="0" border="0">
+                <tr>
+                  <td align="center" style="padding:8px 0 32px 0;">
+                    <a href="{{ .ConfirmationURL }}"
+                      style="display:inline-block;background:linear-gradient(135deg,#4f46e5,#7c3aed);
+                             color:#ffffff;text-decoration:none;font-size:16px;font-weight:700;
+                             padding:16px 48px;border-radius:12px;letter-spacing:0.2px;
+                             box-shadow:0 4px 14px rgba(79,70,229,0.4);">
+                      Iniciar sesión →
+                    </a>
+                  </td>
+                </tr>
+              </table>
+
+              <!-- Divider -->
+              <table width="100%" cellpadding="0" cellspacing="0" border="0">
+                <tr>
+                  <td style="border-top:1px solid #e5e7eb;padding-top:28px;">
+                    <p style="margin:0 0 8px 0;font-size:13px;color:#9ca3af;">
+                      ¿El botón no funciona? Copia y pega este enlace en tu navegador:
+                    </p>
+                    <p style="margin:0;font-size:12px;color:#4f46e5;word-break:break-all;
+                               background:#f5f3ff;border-radius:8px;padding:10px 14px;
+                               border-left:3px solid #7c3aed;">
+                      {{ .ConfirmationURL }}
+                    </p>
+                  </td>
+                </tr>
+              </table>
+
+            </td>
+          </tr>
+
+          <!-- Aviso de seguridad -->
+          <tr>
+            <td style="padding:0 48px 32px 48px;">
+              <table width="100%" cellpadding="0" cellspacing="0" border="0">
+                <tr>
+                  <td style="background:#fefce8;border:1px solid #fde68a;border-radius:10px;
+                             padding:14px 18px;">
+                    <p style="margin:0;font-size:12px;color:#92400e;line-height:1.6;">
+                      🔒 <strong>Seguridad:</strong> Si no solicitaste este acceso, ignora
+                      este correo. Nadie de AiCobranzas te pedirá tu contraseña.
+                    </p>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <!-- Footer -->
+          <tr>
+            <td align="center"
+              style="background:#f9fafb;border-top:1px solid #f3f4f6;
+                     padding:24px 48px;border-radius:0 0 16px 16px;">
+              <p style="margin:0 0 4px 0;font-size:12px;color:#9ca3af;">
+                © 2025 AiCobranzas · Todos los derechos reservados
+              </p>
+              <p style="margin:0;font-size:12px;color:#d1d5db;">
+                Este es un mensaje automático, no respondas a este correo.
+              </p>
+            </td>
+          </tr>
+
+        </table>
+        <!-- End Card -->
+
+      </td>
+    </tr>
+  </table>
+
+</body>
+</html>

@@ -1,0 +1,27 @@
+# Dependencies
+node_modules/
+server/node_modules/
+
+# Build outputs
+dist/
+build/
+
+# Logs and debug artifacts
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+build_out.txt
+build_err.txt
+build_errors.txt
+
+# Local environment files
+.env
+.env.local
+.env.*.local
+server/.env
+
+# Local tools/cache
+.tools/
+.DS_Store
+Thumbs.db

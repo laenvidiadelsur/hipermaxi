@@ -1,0 +1,15 @@
+SyntaxError: Cannot use import statement outside a moduleC:\Users\Usuario\Downloads\AgenteCobranza\Aicobranzas\server\index.js:1
+import dotenv from 'dotenv';
+^^^^^^
+
+SyntaxError: Cannot use import statement outside a module
+    at wrapSafe (node:internal/modules/cjs/loader:1691:18)
+    at Module._compile (node:internal/modules/cjs/loader:1734:20)
+    at Object..js (node:internal/modules/cjs/loader:1893:10)
+    at Module.load (node:internal/modules/cjs/loader:1480:32)
+    at Module._load (node:internal/modules/cjs/loader:1299:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:328:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:244:24)
+    at cjsLoader (node:internal/modules/esm/translators:342:5)
+    at ModuleWrap.<anonymous> (node:internal/modules/esm/translators:234:7)
+    at ModuleJob.run (node:internal/modules/esm/module_job:377:25)

@@ -1,0 +1,24 @@
+{
+  "rewrites": [
+    { "source": "/health",             "destination": "/api/index.js" },
+    { "source": "/health/(.*)",        "destination": "/api/index.js" },
+    { "source": "/auth/(.*)",          "destination": "/api/index.js" },
+    { "source": "/webhooks/(.*)",      "destination": "/api/index.js" },
+    { "source": "/invites/(.*)",       "destination": "/api/index.js" },
+    { "source": "/setup/(.*)",         "destination": "/api/index.js" },
+    { "source": "/mcp",                "destination": "/api/mcp.mjs" },
+    { "source": "/mcp/(.*)",           "destination": "/api/mcp.mjs" },
+
+    {
+      "source": "/admin/(.*)",
+      "has": [{ "type": "header", "key": "authorization" }],
+      "destination": "/api/index.js"
+    },
+    {
+      "source": "/api/(.*)",
+      "destination": "/api/index.js"
+    },
+
+    { "source": "/(.*)", "destination": "/index.html" }
+  ]
+}
